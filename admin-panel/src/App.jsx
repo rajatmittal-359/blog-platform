@@ -6,7 +6,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import BlogsPage from "./pages/BlogsPage";
 import CreateBlogPage from "./pages/CreateBlogPage";
 import EditBlogPage from "./pages/EditBlogPage";
-
+import UsersPage from "./pages/UsersPage";
 function App() {
   return (
     <BrowserRouter>
@@ -25,6 +25,7 @@ function App() {
           <Route path="blogs" element={<BlogsPage />} />
           <Route path="blogs/create" element={<CreateBlogPage />} />
           <Route path="blogs/edit/:id" element={<EditBlogPage />} />
+          <Route path="users" element={<UsersPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/login" replace />} />
