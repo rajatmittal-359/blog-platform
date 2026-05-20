@@ -21,6 +21,7 @@ function CreateBlogPage() {
     twitterCard: "summary_large_image",
     internalLinks: "",
     externalLinks: "",
+    faq: [{ question: "", answer: "" }],
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -32,7 +33,31 @@ function CreateBlogPage() {
       [e.target.name]: e.target.value,
     }));
   };
+  const handleFaqChange = (index, field, value) => {
+  const updatedFaq = [...formData.faq];
+  updatedFaq[index][field] = value;
 
+  setFormData((prev) => ({
+    ...prev,
+    faq: updatedFaq,
+  }));
+};
+
+const addFaqItem = () => {
+  setFormData((prev) => ({
+    ...prev,
+    faq: [...prev.faq, { question: "", answer: "" }],
+  }));
+};
+
+const removeFaqItem = (index) => {
+  const updatedFaq = formData.faq.filter((_, i) => i !== index);
+
+  setFormData((prev) => ({
+    ...prev,
+    faq: updatedFaq.length ? updatedFaq : [{ question: "", answer: "" }],
+  }));
+};
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -274,6 +299,64 @@ function CreateBlogPage() {
     placeholder="https://mongoosejs.com, https://nextjs.org"
     className="w-full rounded-lg border border-gray-300 px-4 py-2 outline-none focus:border-blue-500"
   />
+</div>
+<div className="space-y-4 rounded-lg border border-gray-200 p-4">
+  <div className="flex items-center justify-between">
+    <div>
+      <h3 className="text-lg font-semibold text-gray-800">FAQ Section</h3>
+      <p className="text-sm text-gray-500">
+        Add schema-ready FAQs for this blog
+      </p>
+    </div>
+
+    <button
+      type="button"
+      onClick={addFaqItem}
+      className="rounded-lg bg-green-600 px-4 py-2 text-sm text-white hover:bg-green-700"
+    >
+      Add FAQ
+    </button>
+  </div>
+
+  {formData.faq.map((item, index) => (
+    <div key={index} className="space-y-3 rounded-lg border border-gray-200 p-4">
+      <div>
+        <label className="mb-1 block text-sm font-medium text-gray-700">
+          Question
+        </label>
+        <input
+          type="text"
+          value={item.question}
+          onChange={(e) => handleFaqChange(index, "question", e.target.value)}
+          placeholder="Enter FAQ question"
+          className="w-full rounded-lg border border-gray-300 px-4 py-2 outline-none focus:border-blue-500"
+        />
+      </div>
+
+      <div>
+        <label className="mb-1 block text-sm font-medium text-gray-700">
+          Answer
+        </label>
+        <textarea
+          value={item.answer}
+          onChange={(e) => handleFaqChange(index, "answer", e.target.value)}
+          placeholder="Enter FAQ answer"
+          rows="3"
+          className="w-full rounded-lg border border-gray-300 px-4 py-2 outline-none focus:border-blue-500"
+        />
+      </div>
+
+      <div className="flex justify-end">
+        <button
+          type="button"
+          onClick={() => removeFaqItem(index)}
+          className="rounded-lg bg-red-100 px-4 py-2 text-sm text-red-600 hover:bg-red-200"
+        >
+          Remove
+        </button>
+      </div>
+    </div>
+  ))}
 </div>
         <div className="grid gap-5 md:grid-cols-2">
           <div>
