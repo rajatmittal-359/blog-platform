@@ -395,6 +395,72 @@ const removeFaqItem = (index) => {
         >
           {isLoading ? "Creating..." : "Create Blog"}
         </button>
+        <div className="mt-8 rounded-xl border border-gray-200 bg-gray-50 p-6">
+  <h3 className="text-lg font-semibold text-gray-800">Live Preview</h3>
+  <p className="mt-1 text-sm text-gray-500">
+    This is how your blog content is shaping up in the admin preview.
+  </p>
+
+  <div className="mt-6 rounded-xl bg-white p-6 shadow-sm">
+    {formData.featureImage && (
+      <img
+        src={formData.featureImage}
+        alt={formData.title || "Feature preview"}
+        className="mb-4 h-56 w-full rounded-lg object-cover"
+      />
+    )}
+
+    <p className="mb-2 text-sm font-medium uppercase tracking-wide text-blue-600">
+      {formData.categories || "Category Preview"}
+    </p>
+
+    <h1 className="mb-3 text-3xl font-bold text-gray-900">
+      {formData.title || "Your blog title will appear here"}
+    </h1>
+
+    <p className="mb-4 text-sm text-gray-500">
+      {formData.metaDescription || "Meta description preview will appear here."}
+    </p>
+
+    <div className="mb-4 flex flex-wrap gap-2">
+      {formData.tags
+        ?.split(",")
+        .map((tag) => tag.trim())
+        .filter(Boolean)
+        .map((tag, index) => (
+          <span
+            key={index}
+            className="rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-600"
+          >
+            {tag}
+          </span>
+        ))}
+    </div>
+
+    <div className="prose prose-sm max-w-none text-gray-700 whitespace-pre-wrap">
+      {formData.content || "Your blog content preview will appear here."}
+    </div>
+
+    {formData.faq?.length > 0 && (
+      <div className="mt-8">
+        <h2 className="mb-3 text-xl font-semibold text-gray-800">FAQs</h2>
+
+        <div className="space-y-3">
+          {formData.faq.map((item, index) => (
+            <div key={index} className="rounded-lg border border-gray-200 p-4">
+              <h3 className="font-medium text-gray-800">
+                {item.question || "FAQ question"}
+              </h3>
+              <p className="mt-2 text-sm text-gray-600">
+                {item.answer || "FAQ answer"}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+</div>
       </form>
     </div>
   );
