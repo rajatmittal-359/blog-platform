@@ -1,8 +1,9 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import api from "../services/api";
 
-function CreateBlogPage() {
+function EditBlogPage() {
+  const { id } = useParams();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -24,6 +25,7 @@ function CreateBlogPage() {
   });
 
   const [isLoading, setIsLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
@@ -33,13 +35,52 @@ function CreateBlogPage() {
     }));
   };
 
+  const fetchBlog = async () => {
+    try {
+      setPageLoading(true);
+      setError("");
+
+      const response = await api.get(`/blogs/${id}`);
+      const blog = response.data.blog;
+
+setFormData({
+  title: blog.title || "",
+  content: blog.content || "",
+  metaTitle: blog.metaTitle || "",
+  metaDescription: blog.metaDescription || "",
+  categories: Array.isArray(blog.categories)
+    ? blog.categories.join(", ")
+    : blog.categories || "",
+  tags: Array.isArray(blog.tags) ? blog.tags.join(", ") : blog.tags || "",
+  status: blog.status || "draft",
+  canonicalUrl: blog.canonicalUrl || "",
+  featureImage: blog.featureImage || "",
+  ogTitle: blog.ogTitle || "",
+  ogDescription: blog.ogDescription || "",
+  ogImage: blog.ogImage || "",
+  twitterCard: blog.twitterCard || "summary_large_image",
+  internalLinks: Array.isArray(blog.internalLinks)
+    ? blog.internalLinks.join(", ")
+    : blog.internalLinks || "",
+  externalLinks: Array.isArray(blog.externalLinks)
+    ? blog.externalLinks.join(", ")
+    : blog.externalLinks || "",
+});
+    } catch (error) {
+      setError(error.response?.data?.message || "Failed to fetch blog");
+    } finally {
+      setPageLoading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       setIsLoading(true);
       setError("");
-      const payload = {
+
+const payload = {
   ...formData,
   categories: formData.categories
     .split(",")
@@ -58,21 +99,30 @@ function CreateBlogPage() {
     .map((item) => item.trim())
     .filter(Boolean),
 };
-      await api.post("/blogs/create", payload);
+
+      await api.put(`/blogs/${id}`, payload);
       navigate("/dashboard/blogs");
     } catch (error) {
-      setError(error.response?.data?.message || "Failed to create blog");
+      setError(error.response?.data?.message || "Failed to update blog");
     } finally {
       setIsLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchBlog();
+  }, [id]);
+
+  if (pageLoading) {
+    return <p className="text-gray-600">Loading blog details...</p>;
+  }
+
   return (
     <div className="mx-auto max-w-4xl rounded-xl bg-white p-6 shadow-sm">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Create Blog</h2>
+        <h2 className="text-2xl font-bold text-gray-800">Edit Blog</h2>
         <p className="text-sm text-gray-500">
-          Add a new blog with basic SEO fields
+          Update blog content and SEO fields
         </p>
       </div>
 
@@ -310,11 +360,11 @@ function CreateBlogPage() {
           disabled={isLoading}
           className="rounded-lg bg-blue-600 px-6 py-2 text-white hover:bg-blue-700 disabled:opacity-60"
         >
-          {isLoading ? "Creating..." : "Create Blog"}
+          {isLoading ? "Updating..." : "Update Blog"}
         </button>
       </form>
     </div>
   );
 }
 
-export default CreateBlogPage;
+export default EditBlogPage;

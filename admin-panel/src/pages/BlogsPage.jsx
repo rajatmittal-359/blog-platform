@@ -21,6 +21,18 @@ function BlogsPage() {
     }
   };
 
+  const handleDelete = async (id) => {
+    const confirmed = window.confirm("Are you sure you want to delete this blog?");
+    if (!confirmed) return;
+
+    try {
+      await api.delete(`/blogs/${id}`);
+      fetchBlogs();
+    } catch (error) {
+      alert(error.response?.data?.message || "Failed to delete blog");
+    }
+  };
+
   useEffect(() => {
     fetchBlogs();
   }, []);
@@ -77,6 +89,9 @@ function BlogsPage() {
                 <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
                   Tags
                 </th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
+                  Actions
+                </th>
               </tr>
             </thead>
 
@@ -87,6 +102,7 @@ function BlogsPage() {
                     <div className="font-medium">{blog.title}</div>
                     <div className="text-xs text-gray-500">{blog.slug}</div>
                   </td>
+
                   <td className="px-4 py-3 text-sm">
                     <span
                       className={`rounded-full px-3 py-1 text-xs font-medium ${
@@ -98,18 +114,39 @@ function BlogsPage() {
                       {blog.status}
                     </span>
                   </td>
+
                   <td className="px-4 py-3 text-sm text-gray-700">
                     {blog.author?.name || "N/A"}
                   </td>
+
                   <td className="px-4 py-3 text-sm text-gray-700">
                     {Array.isArray(blog.categories)
                       ? blog.categories.join(", ")
                       : blog.categories || "N/A"}
                   </td>
+
                   <td className="px-4 py-3 text-sm text-gray-700">
                     {Array.isArray(blog.tags)
                       ? blog.tags.join(", ")
                       : blog.tags || "N/A"}
+                  </td>
+
+                  <td className="px-4 py-3 text-sm">
+                    <div className="flex gap-2">
+                      <Link
+                        to={`/dashboard/blogs/edit/${blog._id}`}
+                        className="rounded-md bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700 hover:bg-blue-200"
+                      >
+                        Edit
+                      </Link>
+
+                      <button
+                        onClick={() => handleDelete(blog._id)}
+                        className="rounded-md bg-red-100 px-3 py-1 text-xs font-medium text-red-700 hover:bg-red-200"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
