@@ -1,42 +1,65 @@
 import Link from "next/link";
-import api from "./lib/api";
+import api from "../../lib/api";
 
-async function getBlogs() {
+async function getBlogsByTag(tag) {
   try {
     const response = await api.get("/blogs");
-    return response.data.blogs || [];
+    const blogs = response.data.blogs || [];
+    const readableTag = decodeURIComponent(tag).toLowerCase();
+
+    return blogs.filter((blog) => {
+      if (blog.status !== "published") return false;
+
+      if (Array.isArray(blog.tags)) {
+        return blog.tags.some(
+          (item) => item.toLowerCase() === readableTag
+        );
+      }
+
+      return blog.tags && blog.tags.toLowerCase() === readableTag;
+    });
   } catch (error) {
     return [];
   }
 }
 
-export default async function HomePage() {
-  const blogs = await getBlogs();
-  const publishedBlogs = blogs.filter((blog) => blog.status === "published");
+export async function generateMetadata({ params }) {
+  const { tag } = await params;
+  const readableTag = decodeURIComponent(tag);
+
+  return {
+    title: `${readableTag} Blogs`,
+    description: `Browse published blogs tagged with ${readableTag}.`,
+  };
+}
+
+export default async function TagPage({ params }) {
+  const { tag } = await params;
+  const blogs = await getBlogsByTag(tag);
+  const readableTag = decodeURIComponent(tag);
 
   return (
     <main className="min-h-screen bg-gray-50 px-6 py-10">
       <div className="mx-auto max-w-6xl">
         <section className="mb-10 rounded-2xl bg-white p-8 shadow-sm">
           <p className="mb-3 text-sm font-medium uppercase tracking-wide text-blue-600">
-            Blog Management System
+            Tag Archive
           </p>
           <h1 className="mb-4 text-4xl font-bold text-gray-900">
-            Latest Published Blogs
+            {readableTag}
           </h1>
-          <p className="max-w-2xl text-gray-600">
-            Explore SEO-optimized blog posts built with Next.js frontend,
-            React admin panel, Express APIs, and MongoDB backend.
+          <p className="text-gray-600">
+            {blogs.length} published blog{blogs.length !== 1 ? "s" : ""} found with this tag.
           </p>
         </section>
 
-        {publishedBlogs.length === 0 ? (
+        {blogs.length === 0 ? (
           <div className="rounded-2xl bg-white p-8 text-center text-gray-500 shadow-sm">
-            No published blogs found.
+            No published blogs found for this tag.
           </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {publishedBlogs.map((blog) => (
+            {blogs.map((blog) => (
               <Link
                 key={blog._id}
                 href={`/blog/${blog.slug}`}
@@ -58,23 +81,6 @@ export default async function HomePage() {
                   <p className="mb-4 line-clamp-3 text-sm text-gray-600">
                     {blog.metaDescription || blog.content}
                   </p>
-
-                  <div className="mb-4 flex flex-wrap gap-2">
-                    {Array.isArray(blog.tags)
-                      ? blog.tags.map((tag, index) => (
-                          <span
-                            key={index}
-                            className="rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-600"
-                          >
-                            {tag}
-                          </span>
-                        ))
-                      : blog.tags && (
-                          <span className="rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-600">
-                            {blog.tags}
-                          </span>
-                        )}
-                  </div>
 
                   <div className="text-sm font-medium text-blue-600 group-hover:underline">
                     Read More →

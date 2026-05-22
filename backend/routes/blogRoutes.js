@@ -3,7 +3,7 @@ const express = require("express");
 const protect = require("../middleware/authMiddleware");
 const authorizeRoles = require("../middleware/roleMiddleware");
 
-const { createBlog,getAllBlogs,getSingleBlog, updateBlog, deleteBlog, } = require("../controllers/blogController");
+const { createBlog, getAllBlogs, getSingleBlog, getSinglePublishedBlogBySlug, updateBlog, deleteBlog, } = require("../controllers/blogController");
 
 const router = express.Router();
 
@@ -15,6 +15,7 @@ router.post(
 );
 router.get("/", getAllBlogs);
 
+router.get("/slug/:slug", getSinglePublishedBlogBySlug);
 router.get("/:id", getSingleBlog);
 
 router.put(
