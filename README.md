@@ -35,7 +35,7 @@ A full stack Blog Management System with:
    - `PORT`
    - JWT secret / token configuration (if applicable in your code)
 4. Start server:
-   - `npm start`
+   - `npm run server`
 
 ### Admin Panel
 1. Go to `admin-panel/`
@@ -51,9 +51,17 @@ A full stack Blog Management System with:
 3. Start dev server:
    - `npm run dev`
 
+Production build:
+- `npm run build`
+- `npm run start`
+
 ## API Routes (Backend)
 
 Base URL: `http://localhost:5000/api`
+
+Public SEO assets (bonus):
+- `robots.txt`: `/robots.txt`
+- `sitemap.xml`: `/sitemap.xml`
 
 ### Auth
 - `POST /api/auth/...` (see `backend/routes/authRoutes.js`)
