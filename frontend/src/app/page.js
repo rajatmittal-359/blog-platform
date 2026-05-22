@@ -1,6 +1,12 @@
 import Link from "next/link";
 import api from "./lib/api";
 
+export const metadata = {
+  title: "Blog Management System",
+  description:
+    "Browse the latest published blogs. SEO-optimized posts with structured data.",
+};
+
 async function getBlogs() {
   try {
     const response = await api.get("/blogs");
